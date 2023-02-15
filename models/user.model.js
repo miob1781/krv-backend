@@ -2,26 +2,27 @@ const {model, Schema } = require("mongoose")
 
 const noteModel = new Schema({
     text: {
-        type: string,
+        type: String,
         required: true
     },
     paragraphId: {
-        type: string,
+        type: String,
         required: true
     }
 })
 
 const userModel = new Schema({
     email: {
-        type: string,
-        required: true
+        type: String,
+        required: true,
+        unique: true
     },
     password: {
-        type: string,
+        type: String,
         required: true
     },
     lessonIds: [{
-        type: string
+        type: String
     }],
     notes: [noteModel]
 })
