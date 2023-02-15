@@ -2,8 +2,50 @@
 const express = require("express")
 const app = express()
 
-// import configuration for dotenv, enabling use of environment variables
+// enable use of environment variables
 require("dotenv/config")
+
+// connect to database
+require("./db")
+
+// enable cors
+const cors = require("cors")
+app.use(cors({
+    credentials: true,
+    origin: process.env.ORIGIN
+}))
+
+// further configuration
+app.set("trust proxy", 1)
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
+// error-handling
+app.use((req, res) => {
+    // this middleware runs whenever requested page is not available
+    res.status(404).json({ errorMessage: "This route is not available." })
+})
+
+app.use((err, req, res) => {
+    // whenever you call next(err), this middleware will handle the error
+    console.error("ERROR", req.method, req.path, err)
+
+    // if a token is not valid, send a 401 error
+    if (err.name === "UnauthorizedError") {
+        res.status(401).json({ message: "invalid token..." })
+    }
+
+    // only render if the error ocurred before sending the response
+    if (!res.headersSent) {
+        res.status(500).json({
+            errorMessage: "Internal server error. Check the server console",
+        })
+    }
+})
+
+// use logging middleware
+const morgan = require("morgan")
+app.use(morgan("dev"))
 
 // start listening
 const PORT = process.env.PORT
