@@ -24,6 +24,7 @@ app.use(express.urlencoded({ extended: false }))
 const isAuthenticated = require("./middleware/jwt.middleware")
 app.use("/auth", require("./routes/user.routes"))
 app.use("/notes", isAuthenticated, require("./routes/notes.routes"))
+app.use("/lessons", isAuthenticated, require("./routes/lessons.routes"))
 
 // error-handling
 app.use((req, res) => {
