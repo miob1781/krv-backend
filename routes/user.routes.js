@@ -12,11 +12,11 @@ const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
 
 // creates new user
 router.post("/signup", (req, res, next) => {
-    const { email, password } = req.body
+    const { username, password } = req.body
 
-    // checks if email provided
-    if (!email) {
-        return res.status(400).json({ message: "Please provide your email." })
+    // checks if username provided
+    if (!username) {
+        return res.status(400).json({ message: "Please provide your username." })
     }
 
     // checks if password provided
@@ -32,12 +32,12 @@ router.post("/signup", (req, res, next) => {
         });
     }
 
-    User.findOne({ email })
+    User.findOne({ username })
         .then(user => {
 
-            // checks if email is taken
+            // checks if username is taken
             if (user) {
-                return res.status(400).json({ message: "User with this email already exists." })
+                return res.status(400).json({ message: "User with this username already exists." })
             }
 
             // creates salt
@@ -49,7 +49,7 @@ router.post("/signup", (req, res, next) => {
                 // hashes password
                 .then(hashedPassword => {
                     return User.create({
-                        email,
+                        username,
                         password: hashedPassword
                     })
                 })
@@ -60,7 +60,7 @@ router.post("/signup", (req, res, next) => {
             const authToken = jwt.sign(
                 {
                     userId: newUser._id,
-                    email: newUser.email
+                    username: newUser.username
                 },
                 process.env.TOKEN_SECRET,
                 { algorithm: "HS256", expiresIn: "6h" }
@@ -75,11 +75,11 @@ router.post("/signup", (req, res, next) => {
 })
 
 router.post("/login", (req, res, next) => {
-    const { email, password } = req.body
+    const { username, password } = req.body
 
-    // checks if email provided
-    if (!email) {
-        return res.status(400).json({ message: "Please provide your email." })
+    // checks if username provided
+    if (!username) {
+        return res.status(400).json({ message: "Please provide your username." })
     }
 
     // checks if password provided
@@ -95,10 +95,10 @@ router.post("/login", (req, res, next) => {
         });
     }
 
-    User.findOne({ email })
+    User.findOne({ username })
         .then(user => {
 
-            // checks if user with this email exists
+            // checks if user with this username exists
             if (!user) {
                 return res.status(400).json({ message: "Wrong credentials." })
             }
@@ -114,7 +114,7 @@ router.post("/login", (req, res, next) => {
                     const authToken = jwt.sign(
                         {
                             userId: newUser._id,
-                            email: newUser.email
+                            username: newUser.username
                         },
                         process.env.TOKEN_SECRET,
                         { algorithm: "HS256", expiresIn: "6h" }

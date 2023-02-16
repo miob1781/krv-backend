@@ -12,7 +12,7 @@ const noteModel = new Schema({
 })
 
 const userModel = new Schema({
-    email: {
+    username: {
         type: String,
         required: true,
         unique: true
