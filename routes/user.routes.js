@@ -63,7 +63,7 @@ router.post("/signup", (req, res, next) => {
                     username: newUser.username
                 },
                 process.env.TOKEN_SECRET,
-                { algorithm: "HS256", expiresIn: "6h" }
+                { algorithm: "HS256", expiresIn: "7d" }
             )
 
             // sends auth token to user
