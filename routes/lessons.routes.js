@@ -1,43 +1,50 @@
 const router = require("express").Router()
 const User = require("../models/user.model")
 
-// READ: Get list of completed sections
-router.get("/:_id", (req, res, next) => {
-    const { _id } = req.params
+// READ: Get all lessonIds
+router.get("/:userId", (req, res, next) => {
+    const { userId } = req.params
 
-    // checks if user id provided
-    if (!_id) {
-        return res.status(400).json({ message: "No valid parameters provided."} )
+    // checks if userId provided
+    if (!userId) {
+        return res.status(400).json({ message: "No user id provided." })
     }
 
-    User.findById(_id)
+    User.findById(userId)
         .then(user => {
 
-            // if no user found
+            // checks if user exists
             if (!user) {
-                return res.status(400).json({message: "No user found."})
+                return res.status(400).json({ message: "This user does not exist." })
             }
 
-            // send list of ids of completed lessons
-            res.json({lessonIds: user.lessonIds})
+            // sends lessonIds to user
+            return res.json({ lessonIds: user.lessonIds })
         })
         .catch(err => {
-            console.log("error while reading lessonIds: ", err)
+            console.log("Error while loading lessonIds: ", err)
             next(err)
         })
 })
 
 // CREATE: Add lesson id to list 
-router.put("/", (req, res, next) => {
-    const { _id, lessonId } = req.body
+router.post("/", (req, res, next) => {
+    const { userId, lessonId } = req.body
 
     // checks if valid parameters provided
-    if (!_id || !lessonId) {
-        return res.status(400).json({message: "No valid parameters provided."})
+    if (!userId || !lessonId) {
+        return res.status(400).json({ message: "No valid parameters provided." })
     }
 
-    User.findByIdAndUpdate(_id, {$addToSet: {lessonIds: lessonId}}, {new: true})
+    User.findByIdAndUpdate(userId, { $addToSet: { lessonIds: lessonId } }, { new: true })
         .then(user => {
+
+            // checks if user exists
+            if (!user) {
+                return res.status(400).json({ message: "User does not exist." })
+            }
+
+            // sends new lessonIds to user
             res.status(201).json({lessonIds: user.lessonIds})
         })
         .catch(err => {

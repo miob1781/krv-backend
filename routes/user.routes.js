@@ -60,9 +60,7 @@ router.post("/signup", (req, res, next) => {
             const authToken = jwt.sign(
                 {
                     userId: newUser._id,
-                    username: newUser.username,
-                    lessonIds: newUser.lessonIds,
-                    notes: newUser.notes
+                    username: newUser.username
                 },
                 process.env.TOKEN_SECRET,
                 { algorithm: "HS256", expiresIn: "7d" }
@@ -116,9 +114,7 @@ router.post("/login", (req, res, next) => {
                     const authToken = jwt.sign(
                         {
                             userId: user._id,
-                            username: user.username,
-                            lessonIds: user.lessonIds,
-                            notes: user.notes
+                            username: user.username
                         },
                         process.env.TOKEN_SECRET,
                         { algorithm: "HS256", expiresIn: "6h" }

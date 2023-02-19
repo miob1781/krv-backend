@@ -11,6 +11,14 @@ const noteModel = new Schema({
     }
 })
 
+const lessonNotesModel = new Schema({
+    notes: [noteModel],
+    lessonId: {
+        type: String,
+        required: true
+    }
+})
+
 const userModel = new Schema({
     username: {
         type: String,
@@ -24,7 +32,7 @@ const userModel = new Schema({
     lessonIds: [{
         type: String
     }],
-    notes: [noteModel]
+    notes: [lessonNotesModel]
 })
 
 const User = model("User", userModel)
