@@ -19,7 +19,7 @@ router.get("/", (req, res, next) => {
             }
 
             // sends notes of section to user
-            const lessonNotes = user.notes.find(arr => arr.lessonId === lessonId)
+            const lessonNotes = user.notes.find(lessonNotesObject => lessonNotesObject.lessonId === lessonId)
             return res.json({ lessonNotes })
         })
         .catch(err => {
@@ -74,7 +74,7 @@ router.post("/", (req, res, next) => {
                 .then(user => {
 
                     // sends new notes of section to user
-                    const lessonNotes = user.notes.filter(arr => arr.lessonId === lessonId)
+                    const lessonNotes = user.notes.filter(lessonNotesObject => lessonNotesObject.lessonId === lessonId)
                     res.status(201).json({ lessonNotes })
                 })
                 .catch(err => {
