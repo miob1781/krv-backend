@@ -8,10 +8,7 @@ require("dotenv/config")
 // connect to database
 require("./db")
 
-// further configuration
 app.set("trust proxy", 1)
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
 
 // enable cors
 const cors = require("cors")
@@ -23,6 +20,9 @@ app.use(cors({
 // use logging middleware
 const morgan = require("morgan")
 app.use(morgan("dev"))
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 // routes
 const isAuthenticated = require("./middleware/jwt.middleware")

@@ -17,12 +17,12 @@ router.post("/signup", (req, res, next) => {
 
     // checks if username provided
     if (!username) {
-        return res.status(400).json({ message: "Please provide your username." })
+        return res.status(400).json({ errorMessage: "Please provide your username." })
     }
 
     // checks if password provided
     if (!password) {
-        return res.status(400).json({ message: "Please provide your password." })
+        return res.status(400).json({ errorMessage: "Please provide your password." })
     }
 
     // checks if password matches regex
@@ -33,28 +33,20 @@ router.post("/signup", (req, res, next) => {
         });
     }
 
-    User.findOne({ username })
-        .then(user => {
-
-            // checks if username is taken
-            if (user) {
-                return res.status(400).json({ message: "User with this username already exists." })
-            }
-
-            // creates salt
-            return bcrypt.genSalt(saltRounds)
-                .then(salt => {
-                    return bcrypt.hash(password, salt)
-                })
-
-                // hashes password
-                .then(hashedPassword => {
-                    return User.create({
-                        username,
-                        password: hashedPassword
-                    })
-                })
+    // creates salt
+    bcrypt.genSalt(saltRounds)
+        .then(salt => {
+            return bcrypt.hash(password, salt)
         })
+
+        // hashes password
+        .then(hashedPassword => {
+            return User.create({
+                username,
+                password: hashedPassword
+            })
+        })
+        // })
         .then(newUser => {
 
             // creates auth token
@@ -70,14 +62,14 @@ router.post("/signup", (req, res, next) => {
             // sends auth token to user
             return res.json({ authToken })
         })
-        .catch((err) => {
+        .catch(err => {
             if (err instanceof mongoose.Error.ValidationError) {
-                return res.status(400).json({ message: err.message })
+                return res.status(400).json({ errorMessage: err.message })
             }
             if (err.code === 11000) {
-                return res.status(400).json({ message: "Username need to be unique. The username you chose is already in use." })
+                return res.status(400).json({ errorMessage: "Der Benutzername ist bereits vergeben." })
             }
-            return res.status(500).json({ message: err.message })
+            return res.status(500).json({ errorMessage: err.message })
         })
 })
 
@@ -86,12 +78,12 @@ router.post("/login", (req, res, next) => {
 
     // checks if username provided
     if (!username) {
-        return res.status(400).json({ message: "Please provide your username." })
+        return res.status(400).json({ errorMessage: "Please provide your username." })
     }
 
     // checks if password provided
     if (!password) {
-        return res.status(400).json({ message: "Please provide your password." })
+        return res.status(400).json({ errorMessage: "Please provide your password." })
     }
 
     // checks if password matches regex
@@ -107,14 +99,14 @@ router.post("/login", (req, res, next) => {
 
             // checks if user with this username exists
             if (!user) {
-                return res.status(400).json({ message: "Wrong credentials." })
+                return res.status(400).json({ errorMessage: "Der Benutzername oder das Passwort sind falsch." })
             }
 
             // hashes and compares password
             bcrypt.compare(password, user.password)
                 .then(isSamePassword => {
                     if (!isSamePassword) {
-                        return res.status(400).json({ message: "Wrong credentials." })
+                        return res.status(400).json({ errorMessage: "Der Benutzername oder das Passwort sind falsch." })
                     }
 
                     // creates auth token
@@ -145,17 +137,17 @@ router.put("/", isAuthenticated, (req, res, next) => {
 
     // checks if userId provided
     if (!userId) {
-        return res.status(400).json({ message: "No userId provided." })
+        return res.status(400).json({ errorMessage: "No userId provided." })
     }
 
     // checks if username provided
     if (!username) {
-        return res.status(400).json({ message: "Please provide your username." })
+        return res.status(400).json({ errorMessage: "Please provide your username." })
     }
 
     // checks if password provided
     if (!password) {
-        return res.status(400).json({ message: "Please provide your password." })
+        return res.status(400).json({ errorMessage: "Please provide your password." })
     }
 
     // checks if password matches regex
@@ -166,27 +158,18 @@ router.put("/", isAuthenticated, (req, res, next) => {
         });
     }
 
-    User.findOne({ username })
-        .then(user => {
+    // creates salt
+    bcrypt.genSalt(saltRounds)
+        .then(salt => {
+            return bcrypt.hash(password, salt)
+        })
 
-            // checks if user with this username exists
-            if (user) {
-                return res.status(400).json({ message: "User with this name already exists." })
-            }
-
-            // creates salt
-            return bcrypt.genSalt(saltRounds)
-                .then(salt => {
-                    return bcrypt.hash(password, salt)
-                })
-
-                // hashes password
-                .then(hashedPassword => {
-                    return User.findByIdAndUpdate(userId, {
-                        username,
-                        password: hashedPassword
-                    }, { new: true })
-                })
+        // hashes password
+        .then(hashedPassword => {
+            return User.findByIdAndUpdate(userId, {
+                username,
+                password: hashedPassword
+            }, { new: true })
         })
         .then(newUser => {
 
@@ -206,9 +189,12 @@ router.put("/", isAuthenticated, (req, res, next) => {
         .catch((err) => {
             console.log("Error while updating user: ", err)
             if (err instanceof mongoose.Error.ValidationError) {
-                return res.status(400).json({ message: err.message })
+                return res.status(400).json({ errorMessage: err.message })
             }
-            return res.status(500).json({ message: err.message })
+            if (err.code === 11000) {
+                return res.status(400).json({ errorMessage: "Der Benutzername ist bereits vergeben." })
+            }
+            return res.status(500).json({ errorMessage: err.message })
         })
 })
 

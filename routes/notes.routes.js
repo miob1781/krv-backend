@@ -7,7 +7,7 @@ router.get("/", (req, res, next) => {
 
     // checks if valid parameters provided
     if (!userId || !lessonId) {
-        return res.status(400).json({ message: "No valid parameters provided." })
+        return res.status(400).json({ errorMessage: "No valid parameters provided." })
     }
 
     User.findById(userId)
@@ -15,7 +15,7 @@ router.get("/", (req, res, next) => {
 
             // checks if user exists
             if (!user) {
-                return res.status(400).json({ message: "This user does not exist." })
+                return res.status(400).json({ errorMessage: "This user does not exist." })
             }
 
             // sends notes of section to user
@@ -34,7 +34,7 @@ router.post("/", (req, res, next) => {
 
     // checks if valid parameters provided
     if (!userId || !note || !note.paragraphId) {
-        return res.send.status(400).json({ message: "No valid parameters provided." })
+        return res.send.status(400).json({ errorMessage: "No valid parameters provided." })
     }
 
     // gets lessonId from paragraphId
@@ -46,7 +46,7 @@ router.post("/", (req, res, next) => {
 
             // checks if user exists
             if (!user) {
-                return res.status(400).json({ message: "This user does not exist." })
+                return res.status(400).json({ errorMessage: "This user does not exist." })
             }
 
             // checks if lesson already has an array with notes

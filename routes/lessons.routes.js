@@ -7,7 +7,7 @@ router.get("/:userId", (req, res, next) => {
 
     // checks if userId provided
     if (!userId) {
-        return res.status(400).json({ message: "No user id provided." })
+        return res.status(400).json({ errorMessage: "No user id provided." })
     }
 
     User.findById(userId)
@@ -15,7 +15,7 @@ router.get("/:userId", (req, res, next) => {
 
             // checks if user exists
             if (!user) {
-                return res.status(400).json({ message: "This user does not exist." })
+                return res.status(400).json({ errorMessage: "This user does not exist." })
             }
 
             // sends lessonIds to user
@@ -33,7 +33,7 @@ router.post("/", (req, res, next) => {
 
     // checks if valid parameters provided
     if (!userId || !lessonId) {
-        return res.status(400).json({ message: "No valid parameters provided." })
+        return res.status(400).json({ errorMessage: "No valid parameters provided." })
     }
 
     User.findByIdAndUpdate(userId, { $addToSet: { lessonIds: lessonId } }, { new: true })
@@ -41,7 +41,7 @@ router.post("/", (req, res, next) => {
 
             // checks if user exists
             if (!user) {
-                return res.status(400).json({ message: "User does not exist." })
+                return res.status(400).json({ errorMessage: "User does not exist." })
             }
 
             // sends new lessonIds to user
