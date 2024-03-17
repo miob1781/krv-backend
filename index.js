@@ -12,10 +12,14 @@ app.set("trust proxy", 1)
 
 // enable cors
 const cors = require("cors")
-app.use(cors({
-    credentials: true,
-    origin: process.env.ORIGIN
-}))            
+if (process.env.ORIGIN === "http://127.0.0.1:5173") {
+    app.use(cors())
+} else {
+    app.use(cors({
+        credentials: true,
+        origin: process.env.ORIGIN
+    }))            
+}
 
 // use logging middleware
 const morgan = require("morgan")
